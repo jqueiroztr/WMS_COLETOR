@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>infoDesign WMS — Coletor</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+
+  :root {
+    --bg:      #0a0e14;
+    --panel:   #111720;
+    --border:  #1e2a3a;
+    --accent:  #f5c400;
+    --blue:    #3b82f6;
+    --txt:     #e2eaf4;
+    --muted:   #4a5568;
+    --green:   #22c55e;
+    --mono:    'JetBrains Mono', monospace;
+    --sans:    'Syne', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--txt);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid de fundo */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(245,196,0,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245,196,0,.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+  }
+
+  /* Header */
+  .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 64px;
+  }
+
+  .logo-circle {
+    width: 56px;
+    height: 56px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 0 40px rgba(245,196,0,.3);
+  }
+
+  .logo-circle svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .logo-text {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .logo-text span { color: var(--muted); font-weight: 400; }
+
+  /* Hero */
+  .hero {
+    margin-bottom: 56px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(245,196,0,.1);
+    border: 1px solid rgba(245,196,0,.25);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+
+  .badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: blink 1.4s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.2; }
+  }
+
+  h1 {
+    font-size: clamp(36px, 7vw, 58px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 20px;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-size: 17px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 520px;
+    font-family: var(--mono);
+    font-weight: 400;
+  }
+
+  /* Download card */
+  .dl-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dl-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+
+  .dl-meta {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .dl-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .dl-meta-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .dl-meta-value {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--txt);
+    font-weight: 700;
+  }
+
+  .dl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--accent);
+    color: #000;
+    font-family: var(--sans);
+    font-size: 16px;
+    font-weight: 800;
+    padding: 16px 32px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: transform .15s, box-shadow .15s;
+    letter-spacing: -0.3px;
+  }
+
+  .dl-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(245,196,0,.35);
+  }
+
+  .dl-btn:active { transform: translateY(0); }
+
+  .dl-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+  .dl-note {
+    margin-top: 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .dl-note a { color: var(--blue); text-decoration: none; }
+  .dl-note a:hover { text-decoration: underline; }
+
+  /* Steps */
+  .section-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    transition: border-color .2s;
+  }
+
+  .step:hover { border-color: rgba(245,196,0,.3); }
+
+  .step-num {
+    width: 28px;
+    height: 28px;
+    background: rgba(245,196,0,.1);
+    border: 1px solid rgba(245,196,0,.3);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-body { flex: 1; }
+  .step-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .step-desc  { font-size: 13px; color: var(--muted); font-family: var(--mono); line-height: 1.5; }
+
+  /* Features */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+
+  .feat {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+
+  .feat-icon { font-size: 22px; margin-bottom: 10px; }
+  .feat-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .feat-desc  { font-size: 12px; color: var(--muted); font-family: var(--mono); line-height: 1.5; }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+    gap: 12px;
+  }
+
+  footer p {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .version-tag {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: rgba(34,197,94,.1);
+    border: 1px solid rgba(34,197,94,.25);
+    color: var(--green);
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  @media (max-width: 480px) {
+    .dl-card { padding: 24px; }
+    .dl-btn  { width: 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Logo -->
+  <div class="logo-row">
+    <div class="logo-circle">
+      <svg viewBox="0 0 26 26" fill="none">
+        <polygon points="18,13 8,6 8,20" stroke="#000" stroke-width="2"
+                 stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+    <div class="logo-text">infoDesign <span>WMS</span></div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="badge">Android · Telnet · WMS</div>
+    <h1>Coletor<br><em>infoDesign</em></h1>
+    <p class="subtitle">
+      Cliente Telnet nativo para Android.<br>
+      Interface moderna para o sistema WMS infoDesign.
+    </p>
+  </div>
+
+  <!-- Download -->
+  <div class="dl-card">
+    <div class="dl-meta">
+      <div class="dl-meta-item">
+        <span class="dl-meta-label">Versão</span>
+        <span class="dl-meta-value">1.0.0</span>
+      </div>
+      <div class="dl-meta-item">
+        <span class="dl-meta-label">Plataforma</span>
+        <span class="dl-meta-value">Android 5.0+</span>
+      </div>
+      <div class="dl-meta-item">
+        <span class="dl-meta-label">Tamanho</span>
+        <span class="dl-meta-value">~3 MB</span>
+      </div>
+      <div class="dl-meta-item">
+        <span class="dl-meta-label">Protocolo</span>
+        <span class="dl-meta-value">Telnet TCP</span>
+      </div>
+    </div>
+
+    <a class="dl-btn" href="app-debug.apk" download>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M12 3v13M5 13l7 7 7-7"/>
+        <path d="M3 21h18"/>
+      </svg>
+      Baixar APK
+    </a>
+
+    <p class="dl-note">
+      ⚠ Antes de instalar, ative <strong>Fontes desconhecidas</strong> nas configurações do Android.<br>
+      Configurações → Segurança → Permitir fontes desconhecidas (ou Instalar apps desconhecidos).
+    </p>
+  </div>
+
+  <!-- Instalação -->
+  <p class="section-title">Como instalar</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Baixe o APK</div>
+        <div class="step-desc">Toque no botão acima no próprio coletor ou transfira o arquivo via USB.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Permita fontes desconhecidas</div>
+        <div class="step-desc">Configurações → Segurança → Ative "Instalar apps desconhecidos".</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Instale o APK</div>
+        <div class="step-desc">Abra o arquivo baixado e confirme a instalação.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Configure o perfil</div>
+        <div class="step-desc">Abra o app → menu ☰ → "+" → informe o IP e porta do servidor WMS.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <p class="section-title">Funcionalidades</p>
+  <div class="features">
+    <div class="feat">
+      <div class="feat-icon">📱</div>
+      <div class="feat-title">Interface nativa</div>
+      <div class="feat-desc">Telas WMS convertidas em layout Android moderno.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📷</div>
+      <div class="feat-title">Leitor de barras</div>
+      <div class="feat-desc">Compatível com leitores HID e câmera.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🔁</div>
+      <div class="feat-title">Reconexão automática</div>
+      <div class="feat-desc">Reconecta sozinho em caso de queda de conexão.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">💾</div>
+      <div class="feat-title">Perfis salvos</div>
+      <div class="feat-desc">Salva múltiplos servidores e encodings.</div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 infoDesign · Todos os direitos reservados</p>
+    <span class="version-tag">v1.0.0 estável</span>
+  </footer>
+
+</div>
+</body>
+</html>
